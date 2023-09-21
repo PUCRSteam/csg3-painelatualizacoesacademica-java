@@ -3,6 +3,7 @@ package com.example.painelatualizacaoesacademicas.service.impl;
 
 import com.example.painelatualizacaoesacademicas.entity.News;
 import com.example.painelatualizacaoesacademicas.exception.AcademicEventNotFoundException;
+import com.example.painelatualizacaoesacademicas.exception.NewsCreationException;
 import com.example.painelatualizacaoesacademicas.mapper.AcademicEventMapper;
 import com.example.painelatualizacaoesacademicas.mapper.NewsMapper;
 import com.example.painelatualizacaoesacademicas.repository.NewsRepository;
@@ -38,5 +39,14 @@ public class NewsServiceImpl implements NewsService {
             throw new AcademicEventNotFoundException("Notícia com ID " + id + " não foi encontrada.");
         }
 
+    }
+
+    @Override
+    public News createNews(News news) {
+        try {
+            return newsRepository.save(news);
+        } catch (Exception e) {
+             throw new NewsCreationException("Erro ao criar a notícia.");
+        }
     }
 }
