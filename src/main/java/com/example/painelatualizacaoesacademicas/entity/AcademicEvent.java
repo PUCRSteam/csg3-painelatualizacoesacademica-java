@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "academic_event")
 @Table(name = "academic_event")
 @Getter
 @Setter
