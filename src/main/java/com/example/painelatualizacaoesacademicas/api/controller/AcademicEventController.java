@@ -39,4 +39,17 @@ public class AcademicEventController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-}
+    @GetMapping("/{id}")
+    public ResponseEntity<DadosCadastroAcademicEvent> findById(@PathVariable Long id) {
+        try {
+            DadosCadastroAcademicEvent evento = eventService.findAcademicEventById(id);
+
+            if (evento == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(evento);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }}

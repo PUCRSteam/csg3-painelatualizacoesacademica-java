@@ -13,4 +13,6 @@ public interface AcademicEventService {
     DadosCadastroAcademicEvent saveNewAcademicEvent(DadosCadastroAcademicEvent cadastroAcademicEvent);
 
     List<DadosCadastroAcademicEvent> findAllAcademicEvents();
+
+    DadosCadastroAcademicEvent findAcademicEventById(Long id);
 }
