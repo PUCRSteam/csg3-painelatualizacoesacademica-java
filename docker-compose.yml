@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 'painelatualizacao-api'
+    ports:
+      - "8085:8085"
+    depends_on:
+      painelatualizacaodb:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL= jdbc:postgresql://painelatualizacaodb:5432/painel
+      - SPRING_DATASOURCE_USERNAME=painel
+      - SPRING_DATASOURCE_PASSWORD=painel
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  painelatualizacaodb:
+    image: postgres:13.1
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      - POSTGRES_USER=painel
+      - POSTGRES_PASSWORD=painel
+      - APP_DB_USER=usuario
+      - APP_DB_PASS=senha
+      - APP_DB_NAME=painelatualizacao
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+
+

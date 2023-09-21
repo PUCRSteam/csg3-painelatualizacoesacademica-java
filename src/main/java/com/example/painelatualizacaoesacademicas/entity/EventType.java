@@ -5,6 +5,7 @@ public enum EventType {
     WORKSHOP,
     CONFERENCIA,
     SEMINARIO,
+    BANCA_TCC,
     OUTRO;
 
 }
