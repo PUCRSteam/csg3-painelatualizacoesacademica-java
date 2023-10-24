@@ -32,8 +32,6 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Pare os serviços existentes usando docker-compose
-          docker-compose down
-
-          # Inicie os serviços usando docker-compose com base no arquivo docker-compose.yml
+          # Replace these commands with your deployment process
+          docker pull viniciom/csg3-painelatualizacoesacademicas
           docker-compose up -d
