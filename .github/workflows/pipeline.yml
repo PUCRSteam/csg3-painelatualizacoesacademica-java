@@ -39,3 +39,4 @@ jobs:
         script: |
           mkdir -p /deployment/ 
           java -jar /deployment/painelatualizacaoesacademicas-0.0.1-SNAPSHOT.jar 
+
