@@ -13,15 +13,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        # Passo para baixar o código do repositório
 
       - name: Set up Docker
         uses: actions/setup-docker@v2
-        # Passo para configurar o ambiente Docker
 
       - name: Build Docker Image
         run: docker build -t painelatualizacao-api:latest -f Dockerfile .
-        # Passo para construir a imagem Docker a partir do Dockerfile
 
   package-job:
     runs-on: ubuntu-latest
@@ -29,15 +26,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        # Passo para baixar o código do repositório
 
       - name: Docker Login
         run: docker login -u ${{ secrets.CI_DOCKER_REGISTRY_USERNAME }} -p ${{ secrets.CI_DOCKER_REGISTRY_PASS }}
-        # Passo para fazer login no registro Docker
 
       - name: Docker Push
         run: docker push painelatualizacao-api:latest
-        # Passo para empurrar a imagem Docker para o registro
 
   deploy-job:
     runs-on: ubuntu-latest
@@ -45,7 +39,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        # Passo para baixar o código do repositório
 
       - name: SSH into EC2 and Deploy
         uses: appleboy/ssh-action@master
@@ -58,21 +51,3 @@ jobs:
             docker rm painelatualizacao-api || true
             docker pull painelatualizacao-api:latest
             docker-compose -f docker-compose.yml up -d
-        # Passo para se conectar à instância EC2 e implantar a imagem Docker atualizada
-
-  debug-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-        # Passo para baixar o código do repositório
-
-      - name: SSH into EC2 and Show Docker Logs
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            docker logs --since=1h painelatualizacao-api
-        # Passo para se conectar à instância EC2 e mostrar os registros do contêiner Docker
