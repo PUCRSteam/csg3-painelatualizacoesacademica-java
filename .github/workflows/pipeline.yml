@@ -20,7 +20,7 @@ jobs:
         # Login to Docker Hub or another container registry
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         # Push the image to the registry
-        docker push csg3-painelatualizacoesacademicas
+        docker push viniciom/csg3-painelatualizacoesacademicas
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
