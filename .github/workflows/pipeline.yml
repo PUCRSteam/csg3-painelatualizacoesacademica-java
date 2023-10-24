@@ -13,22 +13,17 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Set up Docker
-      uses: actions/setup-docker@v2
-
     - name: Build and Push Docker Image
       run: |
-        # Construa a imagem Docker usando o Dockerfile e dê a ela o nome "painelatualizacao-api"
-        docker build -t painelatualizacao-api -f Dockerfile .
-
-        # Faça login no Docker Hub com as credenciais fornecidas como segredos
-        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-
-        # Envie a imagem Docker para o Docker Hub
-        docker push painelatualizacao-api
+        # Build your Docker image
+        docker build -t your-image-name .
+        # Login to Docker Hub or another container registry
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        # Push the image to the registry
+        docker push your-image-name
       env:
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: SSH into EC2
       uses: appleboy/ssh-action@master
