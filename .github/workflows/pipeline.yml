@@ -8,33 +8,35 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install AWS CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
-      - name: Configure AWS credentials
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region us-east-2
-      - name: Deploy to EC2 instance
-        run: |
-          aws deploy create-deployment \
-            --application-name PainelAtualizacoesAcademia \
-            --deployment-group-name csg3 \
-            --s3-location bucket=my-bucket,key=my-app.zip,bundleType=zip \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --instance-ids i-067ca89ba598b2ae3
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Copy JAR to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "target/painelatualizacaoesacademicas-0.0.1-SNAPSHOT.jar" # Caminho para o arquivo JAR gerado
+        target: "/deployment/" # Caminho remoto na sua instância EC2
+
+    - name: SSH into EC2 and Start the App
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          mkdir -p /deployment/ 
+          java -jar /deployment/painelatualizacaoesacademicas-0.0.1-SNAPSHOT.jar 
+
