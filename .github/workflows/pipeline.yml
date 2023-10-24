@@ -16,11 +16,11 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         # Build your Docker image
-        docker build -t your-image-name .
+        docker build -t csg3-painelatualizacoesacademicas .
         # Login to Docker Hub or another container registry
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         # Push the image to the registry
-        docker push viniciom/csg3-painelatualizacoesacademicas
+        docker push csg3-painelatualizacoesacademicas
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
