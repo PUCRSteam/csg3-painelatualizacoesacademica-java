@@ -13,5 +13,5 @@ public interface AnnouncementService {
 
     List<DadosCadastroComunicado> findAllAnnouncements();
 
-    DadosCadastroComunicado findAnnouncementById(Long id);
+    DadosCadastroComunicado findAnnouncentById(Long id);
 }

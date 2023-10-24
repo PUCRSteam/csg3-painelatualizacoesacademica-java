@@ -57,7 +57,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public DadosCadastroComunicado findAnnouncementById(Long id)  {
+    public DadosCadastroComunicado findAnnouncentById(Long id)  {
         Optional<Announcement> optionalAnnouncement = announcementRepository.findById(id);
 
         if (optionalAnnouncement.isPresent()) {
