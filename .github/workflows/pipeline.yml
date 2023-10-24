@@ -13,30 +13,32 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Set up Java
-      uses: actions/setup-java@v1
-      with:
-        java-version: 17
+    - name: Set up Docker
+      uses: actions/setup-docker@v2
 
-    - name: Build with Maven
-      run: mvn clean package
+    - name: Build and Push Docker Image
+      run: |
+        # Construa a imagem Docker usando o Dockerfile e dê a ela o nome "painelatualizacao-api"
+        docker build -t painelatualizacao-api -f Dockerfile .
 
-    - name: Copy JAR to EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "target/painelatualizacaoesacademicas-0.0.1-SNAPSHOT.jar" # Caminho para o arquivo JAR gerado
-        target: "/deployment/" # Caminho remoto na sua instância EC2
+        # Faça login no Docker Hub com as credenciais fornecidas como segredos
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-    - name: SSH into EC2 and Start the App
+        # Envie a imagem Docker para o Docker Hub
+        docker push painelatualizacao-api
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+    - name: SSH into EC2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          mkdir -p /deployment/ 
-          java -jar /deployment/painelatualizacaoesacademicas-0.0.1-SNAPSHOT.jar 
+          # Pare os serviços existentes usando docker-compose
+          docker-compose down
 
+          # Inicie os serviços usando docker-compose com base no arquivo docker-compose.yml
+          docker-compose up -d
