@@ -30,7 +30,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        key: /src/main/resources/acessopainelatualizacoesacademica.pem
         script: |
           # Replace these commands with your deployment process
           docker pull viniciom/csg3-painelatualizacoesacademicas
