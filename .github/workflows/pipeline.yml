@@ -32,6 +32,6 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Deploy to AWS EC2
       run: |
-        ssh -i ./ssh_key ec2-user@18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas"
+        ssh -o StrictHostKeyChecking=no -i ./ssh_key ec2-user@18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas"
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
