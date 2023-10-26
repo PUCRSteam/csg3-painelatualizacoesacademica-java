@@ -24,14 +24,14 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: SSH into EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: acessopainelatualizacoesacademica.pem
-        script: |
-          # Replace these commands with your deployment process
-          docker pull viniciom/csg3-painelatualizacoesacademicas
-          docker-compose up -d
+    - name: Setup SSH key
+      run: |
+        echo "$SSH_PRIVATE_KEY" > ssh_key
+        chmod 600 ssh_key
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Deploy to AWS EC2
+      run: |
+        ssh -i ./ssh_key ec2-user@y18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas"
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
