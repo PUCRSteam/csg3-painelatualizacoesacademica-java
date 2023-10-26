@@ -13,25 +13,40 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Build and Push Docker Image
+    - name: Build and Cache Docker Image
       run: |
-        # Build your Docker image
-        docker build -t viniciom/csg3-painelatualizacoesacademicas .
-        # Login to Docker Hub or another container registry
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        # Push the image to the registry
-        docker push viniciom/csg3-painelatualizacoesacademicas
+        # Check the cache
+        if [[ -z $(docker images -q viniciom/csg3-painelatualizacoesacademicas) ]]; then
+          # Build your Docker image
+          docker build -t viniciom/csg3-painelatualizacoesacademicas .
+          # Login to Docker Hub or another container registry
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          # Push the image to the registry
+          docker push viniciom/csg3-painelatualizacoesacademicas
+        else
+          echo "Using cached Docker image."
+        fi
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Cache Docker Image
+      uses: actions/cache@v2
+      with:
+        path: /var/lib/docker
+        key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
+        restore-keys: |
+          docker-${{ runner.os }}-
+
     - name: Setup SSH key
       run: |
         echo "$SSH_PRIVATE_KEY" > ssh_key
         chmod 600 ssh_key
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
     - name: Deploy to AWS EC2
       run: |
-        ssh -i ./ssh_key ec2-user@y18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas"
+        ssh -o StrictHostKeyChecking=no -i ./ssh_key ec2-user@18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas"
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
