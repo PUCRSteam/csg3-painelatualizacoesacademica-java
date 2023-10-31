@@ -6,6 +6,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: 'painelatualizacao-api'
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
     ports:
       - "8085:8085"
     depends_on:
