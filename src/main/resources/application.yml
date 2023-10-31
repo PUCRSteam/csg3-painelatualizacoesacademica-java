@@ -14,7 +14,7 @@ spring:
     url: jdbc:postgresql://${DATABASE_URL}/${DATABASE_NAME}
     driverClassName : org.postgresql.Driver
     username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    password: ${DATA_BASE_PASSWORD}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 1
