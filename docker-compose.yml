@@ -12,8 +12,8 @@ services:
       painelatualizacaodb:
         condition: service_healthy
     environment:
-      - DATABASE_URL=painelatualizacaodb.cfwyqygbbgon.us-east-2.rds.amazonaws.com
-      - DATABASE_NAME=painelatualizacaodb
+      - DATABASE_URL={DATABASE_URL}
+      - DATABASE_NAME={DATA_BASE_NAME}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATA_BASE_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
