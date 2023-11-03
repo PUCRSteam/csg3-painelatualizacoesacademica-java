@@ -13,8 +13,8 @@ spring:
   datasource:
     url: jdbc:postgresql://painel-atualizacoes-db.cfwyqygbbgon.us-east-2.rds.amazonaws.com/painel
     driverClassName : org.postgresql.Driver
-    username: ${DATABASE_USERNAME}
-    password: ${DATA_BASE_PASSWORD}
+    username: postgres
+    password: tNSDVeFt0WU9a4qz1abu
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 1
