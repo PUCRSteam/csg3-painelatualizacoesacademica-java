@@ -14,9 +14,9 @@ services:
     ports:
       - "8085:8085"
     environment:
-      - DATABASE_URL=painelatualizacaodb.cfwyqygbbgon.us-east-2.rds.amazonaws.com
-      - DATABASE_NAME=painelatualizacaodb
+      - DATABASE_URL=painel-atualizacoes-db.cfwyqygbbgon.us-east-2.rds.amazonaws.com
+      - DATABASE_NAME=painel
       - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=FhCiiAX8rUg2WM2PnH9E
+      - DATABASE_PASSWORD=tNSDVeFt0WU9a4qz1abu
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
