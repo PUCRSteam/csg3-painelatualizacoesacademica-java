@@ -11,10 +11,10 @@ spring:
         use_jdbc_metadata_defaults: false
     database-platform : org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://${DATABASE_URL}/${DATABASE_NAME}
+    url: jdbc:postgresql://${secrets.DATABASE_URL}/${secrets.DATABASE_NAME}
     driverClassName : org.postgresql.Driver
-    username: ${DATABASE_USERNAME}
-    password: ${DATA_BASE_PASSWORD}
+    username: ${secrets.DATABASE_USERNAME}
+    password: ${secrets.DATA_BASE_PASSWORD}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 1
