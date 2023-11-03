@@ -11,10 +11,10 @@ spring:
         use_jdbc_metadata_defaults: false
     database-platform : org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://painel-atualizacoes-db.cfwyqygbbgon.us-east-2.rds.amazonaws.com/painel
+    url: jdbc:postgresql://${DATABASE_URL}/${DATA_BASE_NAME}
     driverClassName : org.postgresql.Driver
-    username: postgres
-    password: tNSDVeFt0WU9a4qz1abu
+    username: ${DATABASE_USERNAME}
+    password: ${DATA_BASE_PASSWORD}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 1
