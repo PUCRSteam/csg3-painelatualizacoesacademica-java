@@ -1,6 +1,7 @@
 package com.example.painelatualizacaoesacademicas.api.controller;
 
 import com.example.painelatualizacaoesacademicas.entity.News;
+import com.example.painelatualizacaoesacademicas.entity.record.DadosCadastroNews;
 import com.example.painelatualizacaoesacademicas.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,9 @@ public class NewsController {
     private final NewsService newsService;
 
     @GetMapping
-    public ResponseEntity<List<News>> get() {
+    public ResponseEntity<List<DadosCadastroNews>> get() {
         try {
-            List<News> allNews = newsService.findAll();
+            List<DadosCadastroNews> allNews = newsService.findAll();
 
             if (allNews.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -33,9 +34,9 @@ public class NewsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<News> getById(@PathVariable Long id) {
+    public ResponseEntity<DadosCadastroNews> getById(@PathVariable Long id) {
         try {
-            News news = newsService.find(id);
+            DadosCadastroNews news = newsService.findById(id);
 
             if(news == null) {
                 return ResponseEntity.noContent().build();
@@ -48,10 +49,10 @@ public class NewsController {
      }
 
     @PostMapping("/create")
-    public ResponseEntity<News> create(@RequestBody News news) {
+    public ResponseEntity<DadosCadastroNews> create(@RequestBody News news) {
         try {
 
-            News createdNews = newsService.createNews(news);
+            DadosCadastroNews createdNews = newsService.create(news);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdNews);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

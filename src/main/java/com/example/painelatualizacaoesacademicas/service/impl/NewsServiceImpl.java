@@ -2,6 +2,7 @@ package com.example.painelatualizacaoesacademicas.service.impl;
 
 
 import com.example.painelatualizacaoesacademicas.entity.News;
+import com.example.painelatualizacaoesacademicas.entity.record.DadosCadastroNews;
 import com.example.painelatualizacaoesacademicas.exception.AcademicEventNotFoundException;
 import com.example.painelatualizacaoesacademicas.exception.NewsCreationException;
 import com.example.painelatualizacaoesacademicas.mapper.AcademicEventMapper;
@@ -22,19 +23,19 @@ public class NewsServiceImpl implements NewsService {
     private final NewsRepository newsRepository;
 
     @Override
-    public List<News> findAll() {
-        List<News> allAcademicEvent = newsRepository.findAll();
-        return allAcademicEvent.stream()
-                .map(NewsMapper.MAPPER::mapToNews)
+    public List<DadosCadastroNews> findAll() {
+        List<News> allNews = newsRepository.findAll();
+        return allNews.stream()
+                .map(NewsMapper.MAPPER::mapToDadosCadastroNews)
                 .toList();
     }
 
     @Override
-    public News find(Long id) {
+    public DadosCadastroNews findById(Long id) {
         Optional<News> news = newsRepository.findById(id);
 
         if(news.isPresent()) {
-            return NewsMapper.MAPPER.mapToNews(news.get());
+            return NewsMapper.MAPPER.mapToDadosCadastroNews(news.get());
         } else {
             throw new AcademicEventNotFoundException("Notícia com ID " + id + " não foi encontrada.");
         }
@@ -42,9 +43,10 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public News createNews(News news) {
+    public DadosCadastroNews create(News news) {
         try {
-            return newsRepository.save(news);
+            News createdNews = newsRepository.save(news);
+            return NewsMapper.MAPPER.mapToDadosCadastroNews(createdNews);
         } catch (Exception e) {
              throw new NewsCreationException("Erro ao criar a notícia.");
         }

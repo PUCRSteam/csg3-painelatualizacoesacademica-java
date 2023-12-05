@@ -1,11 +1,12 @@
 package com.example.painelatualizacaoesacademicas.service;
 
 import com.example.painelatualizacaoesacademicas.entity.News;
+import com.example.painelatualizacaoesacademicas.entity.record.DadosCadastroNews;
 
 import java.util.List;
 
 public interface NewsService {
-    List<News> findAll();
-    News find(Long id);
-    News createNews(News news);
+    List<DadosCadastroNews> findAll();
+    DadosCadastroNews findById(Long id);
+    DadosCadastroNews create(News news);
 }
