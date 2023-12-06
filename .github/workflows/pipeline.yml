@@ -21,10 +21,11 @@ jobs:
           terraform_version: 1.0.5
 
       - name: Configure AWS Credentials
-        run: |
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-          echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
 
       - name: Terraform Init
         run: terraform init
@@ -36,21 +37,16 @@ jobs:
         env:
           TF_ACTION_WORKING_DIR: infra
 
-      # Step 4: Build and Cache Docker Image
       - name: Build and Cache Docker Image
         run: |
           COMMIT_HASH=${GITHUB_SHA}
-          # Build Docker image with commit hash
           docker build -t viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH} .
-          # Docker Hub login
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          # Push the image to Docker Hub
           docker push viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH}
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 5: Cache Docker Image
       - name: Cache Docker Image
         uses: actions/cache@v2
         with:
@@ -59,29 +55,24 @@ jobs:
           restore-keys: |
             docker-${{ runner.os }}
 
-      # Step 6: Setup SSH key
       - name: Setup SSH key
         run: |
-          echo "$SSH_PRIVATE_KEY" > ssh_key
-          chmod 600 ssh_key
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 7: Apply Terraform Changes
       - name: Apply Terraform Changes
-        run: |
-          cd infra
-          terraform apply -auto-approve
+        run: terraform apply -auto-approve
         env:
           TF_ACTION_WORKING_DIR: infra
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: "us-east-1"
 
-      # Step 8: Deploy to AWS EC2 using Docker
+      - name: Wait for EC2 to be ready
+        run: sleep 60
+
       - name: Deploy to AWS EC2
         run: |
           COMMIT_HASH=${GITHUB_SHA}
-          ssh -o StrictHostKeyChecking=no -i ./ssh_key ec2-user@18.116.237.57 "docker pull viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH} && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@$(terraform output -json public_ip | jq -r '.[0]') "docker pull viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH} && docker run -d -p 80:80 viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH}"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
