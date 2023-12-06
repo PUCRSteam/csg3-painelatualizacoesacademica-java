@@ -1,3 +1,5 @@
+# .github/workflows/deploy-to-aws.yml
+
 name: Deploy to AWS
 
 on:
@@ -18,11 +20,11 @@ jobs:
         with:
           terraform_version: 1.0.5
 
+      - name: Terraform Init
+        run: terraform init
+
       - name: Terraform Plan
-        run: |
-          cd infra
-          terraform init
-          terraform plan -out=tfplan
+        run: terraform plan -out=tfplan
         env:
           TF_ACTION_WORKING_DIR: infra
 
