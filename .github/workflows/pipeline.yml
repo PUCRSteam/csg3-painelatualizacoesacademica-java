@@ -10,30 +10,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code from the repository
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      # Step 2: Initialize Terraform
+      - name: Initialize Terraform
+        run: |
+          cd infra # Change to the path of your Terraform files
+          terraform init
+        env:
+          TF_ACTION_WORKING_DIR: infra
+
+      # Step 3: Plan Terraform changes
+      - name: Terraform Plan
+        run: |
+          cd infra
+          terraform plan -out=tfplan
+        env:
+          TF_ACTION_WORKING_DIR: infra
+
+      # Step 4: Build and Cache Docker Image
       - name: Build and Cache Docker Image
         run: |
           COMMIT_HASH=${GITHUB_SHA}
-          # Construi a imagem Docker com o hash do commit
+          # Build Docker image with commit hash
           docker build -t viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH} .
-          # Login no Docker Hub
+          # Docker Hub login
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          # Empurrar a imagem para o Docker Hub 
+          # Push the image to Docker Hub
           docker push viniciom/csg3-painelatualizacoesacademicas:${COMMIT_HASH}
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Step 5: Cache Docker Image
       - name: Cache Docker Image
         uses: actions/cache@v2
         with:
           path: /var/lib/docker
-          key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('infra/**/Dockerfile') }}
           restore-keys: |
             docker-${{ runner.os }}
 
+      # Step 6: Setup SSH key
       - name: Setup SSH key
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
@@ -41,6 +61,15 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      # Step 7: Apply Terraform Changes
+      - name: Apply Terraform Changes
+        run: |
+          cd infra
+          terraform apply -auto-approve
+        env:
+          TF_ACTION_WORKING_DIR: infra
+
+      # Step 8: Deploy to AWS EC2 using Docker
       - name: Deploy to AWS EC2
         run: |
           COMMIT_HASH=${GITHUB_SHA}
