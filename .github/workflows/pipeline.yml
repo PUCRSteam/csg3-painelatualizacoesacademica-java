@@ -68,6 +68,9 @@ jobs:
           terraform apply -auto-approve
         env:
           TF_ACTION_WORKING_DIR: infra
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-1"
 
       # Step 8: Deploy to AWS EC2 using Docker
       - name: Deploy to AWS EC2
